@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  backend-mvp:
+    container_name: backend-mvp
+    image: backend-mvp:1.0.0
+    build:
+      context: ./backend
+      dockerfile: flask.dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@waiterapp-postgres:5432/waiterappflask
+    depends_on:
+      - waiterapp-postgres
+
+  waiterapp-postgres:
+    image: postgres:13
+    restart: always
+    container_name: waiterapp-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=waiterappflask
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata: {}
