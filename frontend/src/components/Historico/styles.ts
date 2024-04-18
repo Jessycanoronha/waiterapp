@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
@@ -16,7 +16,7 @@ export const Container = styled.div`
     color: #000;
   }
 
-`
+`;
 
 export const TableContent = styled.div`
   width: 100%;
@@ -49,9 +49,20 @@ export const TableContent = styled.div`
       font-weight: 400;
       color: #000;
 
+      .edit, .delete {
+        background: none;
+        background-color: transparent;
+        border: none; /* Remover borda */
+        padding: 0; /* Remover padding */
+        cursor: pointer;
+        outline: none;
+        margin-right: 8px;
+
+        &:hover {
+          opacity: 0.8;
+        }
+
+      }
 
     }
-    tbody tr:hover {
-      opacity: 0.6;
-    }
-`
+`;
