@@ -16,4 +16,4 @@ def create_upload_folder(app):
     def create_folder():
         upload_dir = os.path.join(current_app.root_path, 'uploads')
         if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
+            os.makedirs(upload_dir)   
