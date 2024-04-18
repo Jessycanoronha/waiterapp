@@ -1,5 +1,5 @@
 from flask import jsonify, request
-from models import db,Order, Product
+from models import db, Order, Product
 
 def initialize_routes(app):
     @app.route('/orders', methods=['GET'])
@@ -7,7 +7,7 @@ def initialize_routes(app):
         try:
             orders = Order.query.all()
             order_list = []
-            for order in orders:
+            for idx, order in enumerate(orders, start=1):
                 product_details = []
                 for product_id in order.products:
                     product = Product.query.get(product_id)
@@ -15,12 +15,14 @@ def initialize_routes(app):
                         'id': product.id,
                         'name': product.name,
                         'description': product.description,
+                        'imagepath': product.imagepath,
                         'price': product.price,
-                        'category_id': product.category_id
+                        'quantity': product.quantity,
+                        'ingredients': product.ingredients
                     })
 
                 order_data = {
-                    'id': orders.index(order) + 1,  
+                    'id': idx,
                     'order_id': order.order_id,
                     'table_number': order.table_number,
                     'status': order.status,
@@ -34,7 +36,6 @@ def initialize_routes(app):
 
     @app.route('/orders', methods=['POST'])
     def create_order():
-        # Rota para criar um novo pedido
         try:
             data = request.json
             order_id = data.get('order_id')
@@ -62,18 +63,17 @@ def initialize_routes(app):
 
     @app.route('/orders/<int:orderId>', methods=['PATCH'])
     def change_order_status(orderId):
-        # Rota para alterar o status de um pedido
         try:
-            status = request.json.get('status')
+            request_status = request.json.get('status')
 
-            if status not in ['WAITING', 'IN_PRODUCTION', 'DONE']:
+            if request_status not in ['WAITING', 'IN_PRODUCTION', 'DONE']:
                 return jsonify({'error': 'Status should be one of these: WAITING, IN_PRODUCTION, DONE'}), 400
 
             order = Order.query.get(orderId)
             if not order:
                 return jsonify({'error': 'Order not found'}), 404
 
-            order.status = status
+            order.status = request_status
             db.session.commit()
 
             return '', 204
@@ -83,7 +83,6 @@ def initialize_routes(app):
 
     @app.route('/orders/<int:orderId>', methods=['DELETE'])
     def cancel_order(orderId):
-        # Rota para cancelar um pedido
         try:
             order = Order.query.get(orderId)
             if not order:
@@ -96,3 +95,50 @@ def initialize_routes(app):
         except Exception as e:
             print(e)
             return '', 500
+        
+    @app.route('/orders/<int:orderId>', methods=['GET'])
+    def get_order(orderId):
+        try:
+            order = Order.query.get(orderId)
+            if not order:
+                return jsonify({'error': 'Order not found'}), 404
+
+            product_details = []
+            for product_id in order.products:
+                product = Product.query.get(product_id)
+                if product:
+                    product_details.append({
+                        'id': product.id,
+                        'name': product.name,
+                        'description': product.description,
+                        'imagepath': product.imagepath,
+                        'price': product.price
+                    })
+
+            return jsonify({
+                'order_id': order.id,
+                'table_number': order.table_number,
+                'status': order.status,
+                'products': product_details
+            }), 200
+        except Exception as e:
+            print(e)
+            return jsonify({'error': 'Failed to fetch order'}), 500
+    
+    @app.route('/orders/<int:orderId>/status/<string:status>', methods=['PATCH'])
+    def update_order_status(orderId, status):
+        try:
+            if status not in ['WAITING', 'IN_PRODUCTION', 'DONE']:
+                return jsonify({'error': 'Invalid status. Status should be one of: WAITING, IN_PRODUCTION, DONE'}), 400
+
+            order = Order.query.get(orderId)
+            if not order:
+                return jsonify({'error': 'Order not found'}), 404
+
+            order.status = status
+            db.session.commit()
+
+            return '', 204
+        except Exception as e:
+            print(e)
+            return jsonify({'error': 'Failed to update order status'}), 500
