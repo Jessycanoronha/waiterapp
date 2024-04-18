@@ -8,8 +8,10 @@ export interface OrderModalProps {
   visible: boolean;
   order: Order | null;
   onClose: () => void;
+  handleClose: (startProduction: boolean) => void
+  handleCancel: (canceled: boolean) => void
 }
-export function OrderModal({ visible, order, onClose }: OrderModalProps) {
+export function OrderModal({ visible, order, onClose, handleClose, handleCancel }: OrderModalProps) {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape' || event.key === 'Esc') {
@@ -26,6 +28,7 @@ export function OrderModal({ visible, order, onClose }: OrderModalProps) {
   const total = order.products.reduce((acc, { price, quantity }) => {
     return acc += (price * quantity!);
   }, 0);
+
   return (
     <Overlay>
       <ModalBody>
@@ -75,7 +78,7 @@ export function OrderModal({ visible, order, onClose }: OrderModalProps) {
           <button
             type="button"
             className="primary"
-            onClick={onClose}
+            onClick={() => handleClose(true)}
           >
             <span>👨🏿‍🍳</span>
             <span>Iniciar produção</span>
@@ -83,7 +86,7 @@ export function OrderModal({ visible, order, onClose }: OrderModalProps) {
           <button
             type="button"
             className="secondary"
-            onClick={onClose}
+            onClick={() => handleCancel(true)}
           >
             <span>Cancelar pedido</span>
           </button>
