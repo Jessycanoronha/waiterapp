@@ -18,7 +18,7 @@ def initialize_routes(app):
                     'description': product.description,
                     'imagepath': product.imagepath,
                     'price': str(product.price),
-                    'category_id': product.category_id,
+                    'quantity': product.quantity,
                     'ingredients': product.ingredients
                 }
                 product_list.append(product_dict)
@@ -76,3 +76,49 @@ def initialize_routes(app):
             print("Exception in create_product route:")
             traceback.print_exc()
             return jsonify({'error': 'Failed to create product', 'message': str(e)}), 500
+
+    @app.route('/products/<int:productId>', methods=['GET'])
+    def get_product(productId):
+        try:
+            product = Product.query.get(productId)
+            if not product:
+                return jsonify({'error': 'Product not found'}), 404
+
+            product_dict = {
+                'id': str(product.id),
+                'name': product.name,
+                'description': product.description,
+                'imagepath': product.imagepath,
+                'price': str(product.price),
+                'category_id': product.category_id,
+                'ingredients': product.ingredients
+            }
+
+            return jsonify(product_dict), 200
+        except Exception as e:
+            print("Exception in get_product route:")
+            traceback.print_exc()
+            return jsonify({'error': 'Failed to fetch product', 'message': str(e)}), 500
+    
+    @app.route('/products/<int:productId>', methods=['PUT'])
+    def update_product(productId):
+        try:
+            product = Product.query.get(productId)
+            if not product:
+                return jsonify({'error': 'Product not found'}), 404
+
+            data = request.json
+            product.name = data.get('name')
+            product.description = data.get('description')
+            product.imagepath = data.get('imagepath')
+            product.price = data.get('price')
+            product.category_id = data.get('category_id')
+            product.ingredients = data.get('ingredients')
+
+            db.session.commit()
+
+            return jsonify({'message': 'Product updated successfully'}), 200
+        except Exception as e:
+            print("Exception in update_product route:")
+            traceback.print_exc()
+            return jsonify({'error': 'Failed to update product', 'message': str(e)}), 500
