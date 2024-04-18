@@ -23,6 +23,16 @@ export function OrderModal({ visible, order, onClose, handleClose, handleCancel 
       document.removeEventListener('keydown', handleKeyDown);
     };
   });
+
+  // const [orders, setOrders] = useState<Order[]>([]);
+  // useEffect(() => {
+  //   api.get(`/orders/${Number(id)}`).then(({ data }) => {
+  //     console.log(data);
+  //     setOrders(data);
+  //   });
+  // }, []);
+
+
   if (!visible || !order) return null;
 
   const total = order.products.reduce((acc, { price, quantity }) => {
@@ -57,13 +67,13 @@ export function OrderModal({ visible, order, onClose, handleClose, handleCancel 
         <OrderDetails>
           <strong>Itens</strong>
           <div className="order-items">
-            {order.products.map(({ id, name, imagepath, quantity, price }) => (
-              <div key={id} className="item">
-                <img src={`http://localhost:3000/file/${imagepath}`} alt={name} width={56} height={28.71} />
-                <span className="quantity">{quantity}x</span>
+            {order.products.map((product) => (
+              <div key={product.id} className="item">
+                <img src={`http://localhost:3000/file/${product.imagepath}`} alt={product.name} width={56} height={28.71} />
+                <span className="quantity">{product.quantity}x</span>
                 <div className="product-details">
-                  <strong>{name}</strong>
-                  <span>{formatCurrency(price)} </span>
+                  <strong>{product.name}</strong>
+                  <span>{formatCurrency(product.price)} </span>
                 </div>
               </div>
             ))}
@@ -73,24 +83,26 @@ export function OrderModal({ visible, order, onClose, handleClose, handleCancel 
             <strong>{formatCurrency(total)}</strong>
           </div>
         </OrderDetails>
+        {order.status === 'WAITING' && (
+          <Actions>
+            <button
+              type="button"
+              className="primary"
+              onClick={() => handleClose(true)}
+            >
+              <span>👨🏿‍🍳</span>
+              <span>Iniciar produção</span>
+            </button>
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => handleCancel(true)}
+            >
+              <span>Cancelar pedido</span>
+            </button>
+          </Actions>
 
-        <Actions>
-          <button
-            type="button"
-            className="primary"
-            onClick={() => handleClose(true)}
-          >
-            <span>👨🏿‍🍳</span>
-            <span>Iniciar produção</span>
-          </button>
-          <button
-            type="button"
-            className="secondary"
-            onClick={() => handleCancel(true)}
-          >
-            <span>Cancelar pedido</span>
-          </button>
-        </Actions>
+        )}
       </ModalBody>
     </Overlay>
   );
