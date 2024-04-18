@@ -9,9 +9,10 @@ export interface OrderModalProps {
   order: Order | null;
   onClose: () => void;
   handleClose: (startProduction: boolean) => void
-  handleCancel: (canceled: boolean) => void
+  handleCancel: (canceled: boolean) => Promise<void>;
+  isLoading: boolean
 }
-export function OrderModal({ visible, order, onClose, handleClose, handleCancel }: OrderModalProps) {
+export function OrderModal({ visible, order, onClose, handleClose, handleCancel, isLoading }: OrderModalProps) {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape' || event.key === 'Esc') {
@@ -89,6 +90,7 @@ export function OrderModal({ visible, order, onClose, handleClose, handleCancel 
               type="button"
               className="primary"
               onClick={() => handleClose(true)}
+              disabled={isLoading}
             >
               <span>👨🏿‍🍳</span>
               <span>Iniciar produção</span>
@@ -97,6 +99,7 @@ export function OrderModal({ visible, order, onClose, handleClose, handleCancel 
               type="button"
               className="secondary"
               onClick={() => handleCancel(true)}
+              disabled={isLoading}
             >
               <span>Cancelar pedido</span>
             </button>

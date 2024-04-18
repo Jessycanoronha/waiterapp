@@ -94,7 +94,7 @@ def initialize_routes(app):
             return '', 204
         except Exception as e:
             print(e)
-            return '', 500
+            return jsonify({'error': 'Failed to cancel order'}), 500
         
     @app.route('/orders/<int:orderId>', methods=['GET'])
     def get_order(orderId):

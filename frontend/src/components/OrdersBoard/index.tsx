@@ -1,38 +1,55 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Order } from '../../types/Order';
 import { OrderModal } from '../OrderModal';
 import { toast, Bounce, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Board, OrdersContainer } from './styles';
+import { api } from '../../utils/api';
 
 type OrdersBoardProps = {
   icon: string;
   title: string;
   orders: Order[];
+  onCancelOrder: (orderId: string) => void
 }
 
-export function OrdersBoard({ icon, title, orders }: OrdersBoardProps) {
+export function OrdersBoard({ icon, title, orders, onCancelOrder }: OrdersBoardProps) {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [toastDisplayed, setToastDisplayed] = useState(false);
-  const [toastErrorDisplayed, setToastErrorDisplayed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleClose = (startProduction: boolean) => {
     setIsOpenModal(false);
     setSelectedOrder(null);
-    if (startProduction && !toastDisplayed) {
-      setToastDisplayed(true);
+    if (startProduction) {
+      notify();
     }
   };
 
-  useEffect(() => {
-    if (toastDisplayed) {
-      notify();
-    }
-    if (toastErrorDisplayed) {
+  const handleCancelOrder = async () => {
+    if (!selectedOrder) return;
+    setIsOpenModal(false);
+    setIsLoading(true);
+    try {
+      await api.delete(`/orders/${selectedOrder.order_id}`);
+      console.log(typeof selectedOrder.order_id);
+      onCancelOrder(selectedOrder!.order_id);
       notifyCancel();
+    } catch (error) {
+      console.error('Erro ao deletar o pedido:', error);
+
+      // toast.error('Erro ao deletar o pedido. Por favor, tente novamente mais tarde.', {
+      //   position: 'top-right',
+      //   autoClose: 2000,
+      //   hideProgressBar: false,
+      //   closeOnClick: true,
+      //   progress: undefined,
+      //   theme: 'light',
+      //   transition: Bounce,
+      // });
     }
-  }, [toastDisplayed, toastErrorDisplayed]);
+    setIsLoading(false);
+  };
 
   const notify = () => {
     toast.success('Pedido iniciado com sucesso!', {
@@ -46,6 +63,7 @@ export function OrdersBoard({ icon, title, orders }: OrdersBoardProps) {
       toastId: 'success',
     });
   };
+
   const notifyCancel = () => {
     toast.error('Pedido cancelado!', {
       position: 'top-right',
@@ -59,19 +77,10 @@ export function OrdersBoard({ icon, title, orders }: OrdersBoardProps) {
     });
   };
 
-  function handleOpenOrderDetails(order: Order) {
-    setToastDisplayed(false);
-    setToastErrorDisplayed(false);
+  const handleOpenOrderDetails = (order: Order) => {
     setSelectedOrder(order);
     setIsOpenModal(true);
-  }
-  function handleCancelOrder(canceled: boolean) {
-    setIsOpenModal(false);
-    setSelectedOrder(null);
-    if (!toastDisplayed && canceled) {
-      setToastErrorDisplayed(true);
-    }
-  }
+  };
 
   return (
     <>
@@ -84,6 +93,7 @@ export function OrdersBoard({ icon, title, orders }: OrdersBoardProps) {
             onClose={() => setIsOpenModal(false)}
             handleClose={handleClose}
             handleCancel={handleCancelOrder}
+            isLoading={isLoading}
           />
         )}
 

@@ -46,7 +46,7 @@ class Product(db.Model):
 class Order(db.Model):
     __tablename__ = 'orders'
     id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.String(50), nullable=False)
+    order_id = db.Column(db.Integer, nullable=False)
     table_number = db.Column(db.String(50))
     status = db.Column(db.String(20), nullable=False, default='WAITING')
     products = db.Column(ARRAY(db.Integer), nullable=False)
