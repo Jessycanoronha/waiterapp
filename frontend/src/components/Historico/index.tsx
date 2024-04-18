@@ -8,6 +8,7 @@ import { orders } from '../../mocks/orders';
 import { Order } from '../../types/Order';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { returnCategoryName } from '../../utils/returnCategoryName';
 
 export const Historico = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -48,17 +49,7 @@ export const Historico = () => {
     });
   };
 
-  function returnCategoryName(id: number | string) {
-    if (id === 1) {
-      return '🍕 Pizza';
-    }
-    if (id === 2) {
-      return '🍔 Hambúrguer';
-    }
-    if (id === 3) {
-      return '🥤 Bebidas';
-    }
-  }
+
 
   return (
     <>

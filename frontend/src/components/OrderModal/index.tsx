@@ -3,6 +3,8 @@ import closeIcon from '../../assets/images/close-icon.svg';
 import { Order } from '../../types/Order';
 import { Actions, ModalBody, OrderDetails, Overlay } from './styles';
 import { formatCurrency } from '../../utils/formatCurrency';
+import { returnCategoryName } from '../../utils/returnCategoryName';
+import { api } from '../../utils/api';
 
 export interface OrderModalProps {
   visible: boolean;
@@ -10,9 +12,10 @@ export interface OrderModalProps {
   onClose: () => void;
   handleClose: (startProduction: boolean) => void
   handleCancel: (canceled: boolean) => Promise<void>;
-  isLoading: boolean
+  isLoading: boolean,
+  selectedOrder: any
 }
-export function OrderModal({ visible, order, onClose, handleClose, handleCancel, isLoading }: OrderModalProps) {
+export function OrderModal({ visible, order, onClose, handleClose, handleCancel, isLoading, selectedOrder }: OrderModalProps) {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape' || event.key === 'Esc') {
@@ -33,6 +36,11 @@ export function OrderModal({ visible, order, onClose, handleClose, handleCancel,
   //   });
   // }, []);
 
+  async function handleChangeOrderStatus() {
+    await api.patch(`/orders/${selectedOrder?.order_id}/status`, {
+      status: 'IN_PRODUCTION'
+    });
+  }
 
   if (!visible || !order) return null;
 
@@ -74,6 +82,9 @@ export function OrderModal({ visible, order, onClose, handleClose, handleCancel,
                 <span className="quantity">{product.quantity}x</span>
                 <div className="product-details">
                   <strong>{product.name}</strong>
+                  <div>
+                    {returnCategoryName(product.category_id)}
+                  </div>
                   <span>{formatCurrency(product.price)} </span>
                 </div>
               </div>
@@ -89,7 +100,7 @@ export function OrderModal({ visible, order, onClose, handleClose, handleCancel,
             <button
               type="button"
               className="primary"
-              onClick={() => handleClose(true)}
+              onClick={() => handleChangeOrderStatus()}
               disabled={isLoading}
             >
               <span>👨🏿‍🍳</span>
