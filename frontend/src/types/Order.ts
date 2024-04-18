@@ -10,10 +10,9 @@ export type OrderStatus = 'WAITING' | 'IN_PRODUCTION' | 'DONE'
 
 export interface Product {
   id: string | number
-  category_id: number | string
   name: string
   description: string
-  imagepath?: string
+  imagepath: string
   price: number
-  quantity?: number
+  quantity: number
 }
