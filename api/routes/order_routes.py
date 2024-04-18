@@ -1,5 +1,7 @@
 from flask import jsonify, request
 from models import db, Order, Product
+from flask_cors import cross_origin
+from flask import request
 
 def initialize_routes(app):
     @app.route('/orders', methods=['GET'])
@@ -18,7 +20,8 @@ def initialize_routes(app):
                         'imagepath': product.imagepath,
                         'price': product.price,
                         'quantity': product.quantity,
-                        'ingredients': product.ingredients
+                        'ingredients': product.ingredients,
+                        'category_id': product.category_id
                     })
 
                 order_data = {
@@ -125,10 +128,14 @@ def initialize_routes(app):
             print(e)
             return jsonify({'error': 'Failed to fetch order'}), 500
     
-    @app.route('/orders/<int:orderId>/status/<string:status>', methods=['PATCH'])
-    def update_order_status(orderId, status):
+    @app.route('/orders/<int:orderId>/status', methods=['PATCH'])
+    @cross_origin()
+    def update_order_status(orderId):
         try:
-            if status not in ['WAITING', 'IN_PRODUCTION', 'DONE']:
+            data = request.json
+            status = data.get('status')
+
+            if not status or status not in ['WAITING', 'IN_PRODUCTION', 'DONE']:
                 return jsonify({'error': 'Invalid status. Status should be one of: WAITING, IN_PRODUCTION, DONE'}), 400
 
             order = Order.query.get(orderId)

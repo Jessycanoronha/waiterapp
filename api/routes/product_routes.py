@@ -19,7 +19,8 @@ def initialize_routes(app):
                     'imagepath': product.imagepath,
                     'price': str(product.price),
                     'quantity': product.quantity,
-                    'ingredients': product.ingredients
+                    'ingredients': product.ingredients,
+                    'category_id': product.category_id
                 }
                 product_list.append(product_dict)
             return jsonify(product_list), 200
@@ -59,13 +60,17 @@ def initialize_routes(app):
             filename = secure_filename(imagepath.filename)
             imagepath.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
+            category = Category.query.get(category_id)
+            if not category:
+                return jsonify({'error': 'Category not found'}), 404
+
             # Criar o produto no banco de dados
             product = Product(
                 name=name,
                 description=description,
                 imagepath=os.path.join(app.config['UPLOAD_FOLDER'], filename),  
                 price=price,
-                category_id=category_id,
+                category=category,
                 ingredients=ingredients
             )
             db.session.add(product)
@@ -76,6 +81,7 @@ def initialize_routes(app):
             print("Exception in create_product route:")
             traceback.print_exc()
             return jsonify({'error': 'Failed to create product', 'message': str(e)}), 500
+
 
     @app.route('/products/<int:productId>', methods=['GET'])
     def get_product(productId):
@@ -122,3 +128,19 @@ def initialize_routes(app):
             print("Exception in update_product route:")
             traceback.print_exc()
             return jsonify({'error': 'Failed to update product', 'message': str(e)}), 500
+
+    @app.route('/products/<int:productId>', methods=['DELETE'])
+    def delete_product(productId):
+        try:
+            product = Product.query.get(productId)
+            if not product:
+                return jsonify({'error': 'Product not found'}), 404
+
+            db.session.delete(product)
+            db.session.commit()
+
+            return jsonify({'message': 'Product deleted successfully'}), 200
+        except Exception as e:
+            print("Exception in delete_product route:")
+            traceback.print_exc()
+            return jsonify({'error': 'Failed to delete product', 'message': str(e)}), 500

@@ -31,6 +31,7 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, default=0)  
     ingredients = db.Column(db.String)
+    category_id = db.Column(db.String)
 
     def to_dict(self):
         return {
@@ -40,7 +41,8 @@ class Product(db.Model):
             'imagepath': str(self.imagepath), 
             'price': self.price,
             'quantity': self.quantity,
-            'ingredients': self.ingredients
+            'ingredients': self.ingredients,
+            'category_id': self.category_id
         }
 
 class Order(db.Model):
