@@ -5,12 +5,13 @@ from routes import category_routes, product_routes, order_routes
 from models import db
 import middleware
 from flask_swagger_ui import get_swaggerui_blueprint
-
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/waiterappflask'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 db.init_app(app)
+migrate = Migrate(app, db)
 
 middleware.configure_cors(app)
 middleware.create_upload_folder(app)
