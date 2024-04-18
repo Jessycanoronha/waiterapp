@@ -1,7 +1,6 @@
 from flask import jsonify, request
 from models import db, Order, Product
 from flask_cors import cross_origin
-from flask import request
 
 def initialize_routes(app):
     @app.route('/orders', methods=['GET'])
@@ -9,7 +8,7 @@ def initialize_routes(app):
         try:
             orders = Order.query.all()
             order_list = []
-            for idx, order in enumerate(orders, start=1):
+            for order in orders:
                 product_details = []
                 for product_id in order.products:
                     product = Product.query.get(product_id)
@@ -25,8 +24,7 @@ def initialize_routes(app):
                     })
 
                 order_data = {
-                    'id': idx,
-                    'order_id': order.order_id,
+                    'id': order.id,
                     'table_number': order.table_number,
                     'status': order.status,
                     'products': product_details
@@ -41,13 +39,10 @@ def initialize_routes(app):
     def create_order():
         try:
             data = request.json
-            order_id = data.get('order_id')
             table_number = data.get('table_number')
             status = data.get('status')
             products = data.get('products')
 
-            if not order_id:
-                return jsonify({'error': 'Order ID is required'}), 400
             if not status:
                 return jsonify({'error': 'Status is required'}), 400
             if status not in ['WAITING', 'IN_PRODUCTION', 'DONE']:
@@ -55,7 +50,7 @@ def initialize_routes(app):
             if not products:
                 return jsonify({'error': 'Products are required'}), 400
 
-            order = Order(order_id=order_id, table_number=table_number, status=status, products=products)
+            order = Order(table_number=table_number, status=status, products=products)
             db.session.add(order)
             db.session.commit()
 
@@ -83,21 +78,6 @@ def initialize_routes(app):
         except Exception as e:
             print(e)
             return '', 500
-
-    @app.route('/orders/<int:orderId>', methods=['DELETE'])
-    def cancel_order(orderId):
-        try:
-            order = Order.query.get(orderId)
-            if not order:
-                return jsonify({'error': 'Order not found'}), 404
-
-            db.session.delete(order)
-            db.session.commit()
-
-            return '', 204
-        except Exception as e:
-            print(e)
-            return jsonify({'error': 'Failed to cancel order'}), 500
         
     @app.route('/orders/<int:orderId>', methods=['GET'])
     def get_order(orderId):
@@ -149,3 +129,18 @@ def initialize_routes(app):
         except Exception as e:
             print(e)
             return jsonify({'error': 'Failed to update order status'}), 500
+
+    @app.route('/orders/<int:id>', methods=['DELETE'])
+    def cancel_order(id):
+        try:
+            order = Order.query.get(id)
+            if not order:
+                return jsonify({'error': 'Order not found'}), 404
+
+            db.session.delete(order)
+            db.session.commit()
+
+            return jsonify({'message': 'Order deleted successfully'}), 200
+        except Exception as e:
+            print(e)
+            return jsonify({'error': 'Failed to cancel order'}), 500
