@@ -6,12 +6,17 @@ import uuid
 
 db = SQLAlchemy()
 
+product_categories = db.Table('product_categories',
+    db.Column('product_id', db.Integer, db.ForeignKey('products.id'), primary_key=True),
+    db.Column('category_id', db.Integer, db.ForeignKey('categories.id'), primary_key=True)
+)
+
 class Category(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     icon = db.Column(db.String(10), nullable=False)
-    products = relationship("Product", back_populates="category")
+    products = db.relationship('Product', secondary=product_categories, backref=db.backref('categories', lazy='dynamic'))
 
     def to_dict(self):
         return {'id': self.id, 'name': self.name, 'icon': self.icon}
@@ -22,27 +27,19 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=False)
-    imagepath = db.Column(db.String, nullable=False)
+    imagepath = db.Column(db.String, nullable=True)
     price = db.Column(db.Float, nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
     ingredients = db.Column(db.String)
 
-    category = relationship("Category", backref="products_association", overlaps="category_reference,products_association")
-    
-def __init__(self, **kwargs):
-    super(Product, self).__init__(**kwargs)
-    self.id = uuid.uuid4().int
-
-def to_dict(self):
-    return {
-        'id': str(self.id),
-        'name': self.name,
-        'description': self.description,
-        'imagePath': self.imagePath, 
-        'price': self.price,
-        'category_id': self.category_id,
-        'ingredients': self.ingredients
-    }
+    def to_dict(self):
+        return {
+            'id': str(self.id),
+            'name': self.name,
+            'description': self.description,
+            'imagepath': str(self.imagepath), 
+            'price': self.price,
+            'ingredients': self.ingredients
+        }
 
 class Order(db.Model):
     __tablename__ = 'orders'
@@ -51,3 +48,14 @@ class Order(db.Model):
     table_number = db.Column(db.String(50))
     status = db.Column(db.String(20), nullable=False, default='WAITING')
     products = db.Column(ARRAY(db.Integer), nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': str(self.id),
+            'order_id': self.order_id,
+            'table_number': self.table_number,
+            'status': self.status,
+            'products': self.products
+        }
+
+        
