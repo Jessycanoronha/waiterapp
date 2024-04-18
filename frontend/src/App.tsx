@@ -1,6 +1,4 @@
-// import { Orders } from "./components/Orders"
-import { GlobalStyles } from "./styles/GlobalStyles"
-
+import { GlobalStyles } from './styles/GlobalStyles';
 
 export function App() {
   return (
@@ -11,5 +9,5 @@ export function App() {
       {/* <Home /> */}
       {/* <Orders /> */}
     </>
-  )
+  );
 }
