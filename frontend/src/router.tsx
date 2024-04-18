@@ -3,16 +3,17 @@ import {
 
   Outlet,
 
-} from "react-router-dom";
+} from 'react-router-dom';
 
-import "./App.css";
-import Navbar from "./components/Navbar/Navbar";
-import { Home } from "./components/Home";
-import { Historico } from "./components/Historico";
+import './App.css';
+import Navbar from './components/Navbar/Navbar';
+import { Home } from './components/Home';
+import { Historico } from './components/Historico';
 
 const AppLayout = () => (
   <div className="container">
-    <div className="sidebar">      <Navbar />
+    <div className="sidebar">
+      <Navbar />
     </div>
     <div className="content">
       <Outlet />
@@ -26,15 +27,16 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       {
-        path: "/",
+        path: '/',
         element: <Home />,
+
       },
       {
-        path: "historico",
+        path: 'historico',
         element: <Historico />,
       },
       {
-        path: "reports",
+        path: 'reports',
         element: '',
       },
     ],
