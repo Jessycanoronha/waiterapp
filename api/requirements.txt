@@ -1,5 +1,4 @@
-flask
-psycopg2-binary
-Flask-SQLAlchemy
-Flask-CORS
+Flask
+Flask-Swagger-Ui
 Flask-Migrate
+Flask-Cors
