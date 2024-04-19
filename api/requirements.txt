@@ -2,3 +2,4 @@ Flask
 Flask-Swagger-Ui
 Flask-Migrate
 Flask-Cors
+python-dotenv
