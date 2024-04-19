@@ -43,3 +43,18 @@ def initialize_routes(app):
     @app.route('/file/<path:filename>')
     def uploaded_file(filename):
         return send_from_directory(os.path.join(app.root_path, app.config['UPLOAD_FOLDER']), filename)
+    
+    @app.route('/categories/<int:categoryId>', methods=['DELETE'])
+    def delete_category(categoryId):
+        try:
+            category = Category.query.get(categoryId)
+            if not category:
+                return jsonify({'error': 'Category not found'}), 404
+
+            db.session.delete(category)
+            db.session.commit()
+
+            return jsonify({'message': 'Category deleted successfully'}), 200
+        except Exception as e:
+            print(e)
+            return jsonify({'error': 'Failed to delete category'}), 500
