@@ -1,5 +1,4 @@
-// import home from '../../assets/images/home.svg';
-// import hist from '../../assets/images/hist.svg'
+
 import { FaBeer } from 'react-icons/fa';
 export const SidebarData = [
   {
@@ -17,6 +16,12 @@ export const SidebarData = [
   {
     title: 'Cardápio',
     path: '/cardapio',
+    cName: 'nav-text',
+    icon: 'restaurant_menu',
+  },
+  {
+    title: 'Categorias',
+    path: '/categorias',
     cName: 'nav-text',
     icon: 'restaurant_menu',
   },
