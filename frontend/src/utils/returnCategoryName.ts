@@ -8,4 +8,7 @@ export function returnCategoryName(id: number | string) {
   if (id == 3) {
     return '🥤 Bebidas';
   }
+  if (id == 4) {
+    return '🏷 Promocões';
+  }
 }
