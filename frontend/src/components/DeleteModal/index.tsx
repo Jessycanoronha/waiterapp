@@ -13,7 +13,7 @@ export interface OrderModalProps {
   handleClose: (deleteConfirmed: boolean) => void
 }
 
-export function DeletOrViewModal({ visible, order, onClose, modalType, handleClose }: OrderModalProps) {
+export function DeleteOrViewModal({ visible, order, onClose, modalType, handleClose }: OrderModalProps) {
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {

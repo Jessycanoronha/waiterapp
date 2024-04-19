@@ -4,18 +4,17 @@ import { Order } from '../../types/Order';
 import { Actions, ModalBody, OrderDetails, Overlay } from './styles';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { returnCategoryName } from '../../utils/returnCategoryName';
-import { api } from '../../utils/api';
 
 export interface OrderModalProps {
   visible: boolean;
   order: Order | null;
   onClose: () => void;
   handleClose: (startProduction: boolean) => void
-  handleCancel: (canceled: boolean) => Promise<void>;
+  handleCancel: (cancelled: boolean) => Promise<void>;
   isLoading: boolean,
-  selectedOrder: any
+  onChangeOrderStatus: () => Promise<void>
 }
-export function OrderModal({ visible, order, onClose, handleClose, handleCancel, isLoading, selectedOrder }: OrderModalProps) {
+export function OrderModal({ visible, order, onClose, handleCancel, isLoading, onChangeOrderStatus }: OrderModalProps) {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape' || event.key === 'Esc') {
@@ -28,19 +27,6 @@ export function OrderModal({ visible, order, onClose, handleClose, handleCancel,
     };
   });
 
-  // const [orders, setOrders] = useState<Order[]>([]);
-  // useEffect(() => {
-  //   api.get(`/orders/${Number(id)}`).then(({ data }) => {
-  //     console.log(data);
-  //     setOrders(data);
-  //   });
-  // }, []);
-
-  async function handleChangeOrderStatus() {
-    await api.patch(`/orders/${selectedOrder?.order_id}/status`, {
-      status: 'IN_PRODUCTION'
-    });
-  }
 
   if (!visible || !order) return null;
 
@@ -52,7 +38,7 @@ export function OrderModal({ visible, order, onClose, handleClose, handleCancel,
     <Overlay>
       <ModalBody>
         <header>
-          <strong>{order.table_number}</strong>
+          <strong>{'Mesa ' + order.table_number}</strong>
           <button type="button" onClick={onClose}>
             <img src={closeIcon} alt="Ícone de fechar" />
           </button>
@@ -95,17 +81,31 @@ export function OrderModal({ visible, order, onClose, handleClose, handleCancel,
             <strong>{formatCurrency(total)}</strong>
           </div>
         </OrderDetails>
-        {order.status === 'WAITING' && (
+        {order.status !== 'DONE' && (
           <Actions>
-            <button
-              type="button"
-              className="primary"
-              onClick={() => handleChangeOrderStatus()}
-              disabled={isLoading}
-            >
-              <span>👨🏿‍🍳</span>
-              <span>Iniciar produção</span>
-            </button>
+            {order.status === 'WAITING' ? (
+              <button
+                type="button"
+                className="primary"
+                onClick={() => onChangeOrderStatus()}
+                disabled={isLoading}
+              >
+                <span>👨🏿‍🍳</span>
+                <span>Iniciar produção</span>
+              </button>
+
+            ) : (
+              <button
+                type="button"
+                className="primary"
+                onClick={() => onChangeOrderStatus()}
+                disabled={isLoading}
+              >
+                <span>👨🏿‍🍳</span>
+                <span>Concluir pedido</span>
+              </button>
+            )}
+
             <button
               type="button"
               className="secondary"

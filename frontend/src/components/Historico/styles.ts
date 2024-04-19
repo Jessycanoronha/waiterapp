@@ -23,7 +23,25 @@ export const TableContent = styled.div`
   max-width: 1216px;
   margin: 40px auto;
 
+h3 {
+  margin-bottom: 24px;
+  color: #000;
+  font-weight: 600;
+  margin-left: 2%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
+  div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    width: 28px;
+    background-color:  rgba(204, 204, 204, 0.2);
+    border-radius: 20%;
+  }
+}
   table {
     width: 100%;
     border-spacing: 0 8px;

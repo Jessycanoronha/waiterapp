@@ -123,7 +123,7 @@ export const Actions = styled.footer`
     cursor: not-allowed;
   }
   .primary {
-    background: #333;
+    background: #D73035;
     border-radius: 48px;
     height: 48px;
     border: 0;

@@ -1,17 +1,17 @@
-import { SetStateAction, useState } from "react";
-import "../../App.css";
-import { Link } from "react-router-dom";
-import { SidebarData } from "../Sidebar/SidebarData";
-import { IconContext } from "react-icons";
+import { SetStateAction, useState } from 'react';
+import '../../App.css';
+import { Link } from 'react-router-dom';
+import { SidebarData } from '../Sidebar/SidebarData';
+import { IconContext } from 'react-icons';
 import WA from '../../assets/images/WA.svg';
-import { FaHome } from "react-icons/fa";
-import { LuMenuSquare } from "react-icons/lu";
-import { GiNotebook } from "react-icons/gi";
-import { TiShoppingCart } from "react-icons/ti";
-
+import { FaHome } from 'react-icons/fa';
+import { LuMenuSquare } from 'react-icons/lu';
+import { GiNotebook } from 'react-icons/gi';
+import { TiShoppingCart } from 'react-icons/ti';
+import { IoIosListBox } from 'react-icons/io';
 
 function Navbar() {
-  const [activeItem, setActiveItem] = useState("/");
+  const [activeItem, setActiveItem] = useState('/');
 
   const setActive = (path: SetStateAction<string>) => {
 
@@ -19,8 +19,8 @@ function Navbar() {
   };
   return (
     <>
-      <IconContext.Provider value={{ color: "undefined" }}>
-        <nav className={"nav-menu active"}>
+      <IconContext.Provider value={{ color: 'undefined' }}>
+        <nav className={'nav-menu active'}>
           <ul className="nav-menu-items" >
             <li className="navbar-toggle">
               <Link to="/" className="menu-bars">
@@ -29,29 +29,32 @@ function Navbar() {
             </li>
             {SidebarData.map((item: any, index: number) => {
               return (
-                <li key={index} className={`${item.cName} ${item.path === activeItem ? "teste" : ""}`} onClick={() => setActive(item.path)}>
+                <li key={index} className={`${item.cName} ${item.path === activeItem ? 'teste' : ''}`} onClick={() => setActive(item.path)}>
                   <Link to={item.path}>
 
-                    {item.title === "Home" && (
+                    {item.title === 'Home' && (
                       <FaHome />
                     )}
-                    {item.title === "Histórico" && (
+                    {item.title === 'Histórico' && (
                       <GiNotebook />
                     )}
-                    {item.title === "Cardápio" && (
+                    {item.title === 'Cardápio' && (
                       <LuMenuSquare />
                     )}
-                    {item.title === "Produtos" && (
+                    {item.title === 'Produtos' && (
                       <TiShoppingCart />
                     )}
-                    <span>{item.title}</span>
+                    {item.title === 'Categorias' && (
+                      <IoIosListBox />
+                    )}
+                    <span> {item.title}</span>
                   </Link>
                 </li>
               );
             })}
           </ul>
         </nav>
-      </IconContext.Provider>
+      </IconContext.Provider >
     </>
   );
 }

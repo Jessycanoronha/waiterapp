@@ -10,20 +10,29 @@ type OrdersBoardProps = {
   icon: string;
   title: string;
   orders: Order[];
-  onCancelOrder: (orderId: string) => void
-}
+  onCancelOrder: (orderId: number | string) => void;
+  onChangeOrderStatus: (orderId: number | string, status: Order['status']) => void;
+};
 
-export function OrdersBoard({ icon, title, orders, onCancelOrder }: OrdersBoardProps) {
+export function OrdersBoard({ icon, title, orders, onCancelOrder, onChangeOrderStatus }: OrdersBoardProps) {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClose = (startProduction: boolean) => {
+    if (!selectedOrder) return;
     setIsOpenModal(false);
-    setSelectedOrder(null);
-    if (startProduction) {
-      notify();
+    setIsLoading(true);
+    try {
+      if (startProduction && selectedOrder) {
+        setTimeout(() => {
+          notify('success', `O pedido ${selectedOrder.id} da mesa ${selectedOrder.table_number} foi iniciado com sucesso!`);
+        }, 4);
+      }
+    } catch (error) {
+      console.error('Erro ao iniciar o pedido:', error);
     }
+    setIsLoading(false);
   };
 
   const handleCancelOrder = async () => {
@@ -31,41 +40,44 @@ export function OrdersBoard({ icon, title, orders, onCancelOrder }: OrdersBoardP
     setIsOpenModal(false);
     setIsLoading(true);
     try {
-      await api.delete(`/orders/${selectedOrder.order_id}`);
-      console.log(typeof selectedOrder.order_id);
-      onCancelOrder(selectedOrder!.order_id);
-      notifyCancel();
+      await api.delete(`/orders/${selectedOrder.id}`);
+      onCancelOrder(selectedOrder.id);
+      setTimeout(() => {
+        notify('success', 'Pedido cancelado com sucesso!');
+      }, 3);
     } catch (error) {
       console.error('Erro ao deletar o pedido:', error);
-
-      // toast.error('Erro ao deletar o pedido. Por favor, tente novamente mais tarde.', {
-      //   position: 'top-right',
-      //   autoClose: 2000,
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   progress: undefined,
-      //   theme: 'light',
-      //   transition: Bounce,
-      // });
     }
     setIsLoading(false);
   };
 
-  const notify = () => {
-    toast.success('Pedido iniciado com sucesso!', {
-      position: 'top-right',
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      progress: undefined,
-      theme: 'light',
-      transition: Bounce,
-      toastId: 'success',
-    });
+  const handleChangeOrderStatus = async () => {
+    if (!selectedOrder) return;
+    setIsOpenModal(false);
+    setIsLoading(true);
+    try {
+      const status = selectedOrder.status === 'WAITING' ? 'IN_PRODUCTION' : 'DONE';
+      await api.patch(`/orders/${selectedOrder.id}/status`, {
+        status: status
+      });
+      onChangeOrderStatus(selectedOrder.id, status);
+      if (selectedOrder.status === 'WAITING') {
+        setTimeout(() => {
+          notify('success', 'O pedido está em produção 👨🏿‍🍳 🍽️ !');
+        }, 4);
+      } else {
+        setTimeout(() => {
+          notify('success', 'O pedido foi finalizado com sucesso!');
+        }, 4);
+      }
+    } catch (error) {
+      console.error('Erro ao finalizar o pedido:', error);
+    }
+    setIsLoading(false);
   };
 
-  const notifyCancel = () => {
-    toast.error('Pedido cancelado!', {
+  const notify = (type: 'success' | 'error', message: string) => {
+    toast[type](message, {
       position: 'top-right',
       autoClose: 2000,
       hideProgressBar: false,
@@ -73,7 +85,7 @@ export function OrdersBoard({ icon, title, orders, onCancelOrder }: OrdersBoardP
       progress: undefined,
       theme: 'light',
       transition: Bounce,
-      toastId: 'error',
+      toastId: type,
     });
   };
 
@@ -94,6 +106,7 @@ export function OrdersBoard({ icon, title, orders, onCancelOrder }: OrdersBoardP
             handleClose={handleClose}
             handleCancel={handleCancelOrder}
             isLoading={isLoading}
+            onChangeOrderStatus={handleChangeOrderStatus}
           />
         )}
 
