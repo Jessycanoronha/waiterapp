@@ -32,6 +32,8 @@ Sinta-se à vontade para contribuir com novas funcionalidades, correções de bu
 4. Faça push para a branch (`git push origin feature/nova-feature`).
 5. Crie um novo Pull Request.
 
+![WaiterApp](waiterapp.gif)
+
 ```
 Feito por Jéssyca Noronha ❤️ 🤘🏿
 ```
