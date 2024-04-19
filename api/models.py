@@ -59,5 +59,3 @@ class Order(db.Model):
             'status': self.status,
             'products': self.products
         }
-
-        
