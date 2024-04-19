@@ -1,6 +1,5 @@
 import {
   createBrowserRouter,
-
   Outlet,
 
 } from 'react-router-dom';
@@ -9,6 +8,7 @@ import './App.css';
 import Navbar from './components/Navbar/Navbar';
 import { Home } from './components/Home';
 import { Historico } from './components/Historico';
+import { CategoryComponent } from './components/Categoria';
 
 const AppLayout = () => (
   <div className="container">
@@ -36,8 +36,8 @@ export const router = createBrowserRouter([
         element: <Historico />,
       },
       {
-        path: 'reports',
-        element: '',
+        path: 'categorias',
+        element: <CategoryComponent />,
       },
     ],
   },
