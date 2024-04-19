@@ -43,6 +43,17 @@ def initialize_routes(app):
     @app.route('/file/<path:filename>')
     def uploaded_file(filename):
         return send_from_directory(os.path.join(app.root_path, app.config['UPLOAD_FOLDER']), filename)
+    @app.route('/categories/<int:categoryId>', methods=['GET'])
+    def get_category(categoryId):
+        try:
+            category = Category.query.get(categoryId)
+            if not category:
+                return jsonify({'error': 'Category not found'}), 404
+
+            return jsonify(category.to_dict()), 200
+        except Exception as e:
+            print(e)
+            return jsonify({'error': 'Failed to fetch category'}), 500
     
     @app.route('/categories/<int:categoryId>', methods=['DELETE'])
     def delete_category(categoryId):
