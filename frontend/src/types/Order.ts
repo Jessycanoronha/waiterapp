@@ -1,6 +1,5 @@
 export interface Order {
   id: string | number
-  order_id: number
   status: OrderStatus
   table_number: string
   products: Product[]
@@ -15,4 +14,6 @@ export interface Product {
   imagepath: string
   price: number
   quantity: number
+  ingredients: string
+  category_id: number
 }
