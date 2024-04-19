@@ -52,4 +52,6 @@ yarn run dev
 
 5. O projeto estará disponível em http://localhost:3000.
 
+![WaiterApp](waiterapp.gif)
+
 Feito por <b>Jéssyca Noronha</b> ❤️🤘🏿
