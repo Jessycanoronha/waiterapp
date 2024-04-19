@@ -60,9 +60,9 @@ def initialize_routes(app):
             filename = secure_filename(imagepath.filename)
             imagepath.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            category = Category.query.get(category_id)
-            if not category:
-                return jsonify({'error': 'Category not found'}), 404
+            # category = Category.query.get(category_id)
+            # if not category:
+            #     return jsonify({'error': 'Category not found'}), 404
 
             # Criar o produto no banco de dados
             product = Product(
@@ -70,7 +70,7 @@ def initialize_routes(app):
                 description=description,
                 imagepath=os.path.join(app.config['UPLOAD_FOLDER'], filename),  
                 price=price,
-                category=category,
+                category_id=category_id,
                 ingredients=ingredients
             )
             db.session.add(product)
