@@ -37,7 +37,7 @@ export function DeletOrViewModal({ visible, order, onClose, modalType, handleClo
     <Overlay>
       <ModalBody>
         <header>
-          <strong>{order.table_number}</strong>
+          <strong>{'Mesa ' + order.table_number}</strong>
           <button type="button" onClick={onClose}>
             <img src={closeIcon} alt="Ícone de fechar" />
           </button>
